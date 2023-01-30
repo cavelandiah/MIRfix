@@ -6,7 +6,9 @@ from lib.logger import makelogdir, makelogfile, listener_process, listener_confi
 # load own modules
 from lib.Collection import *
 from Bio.Align.Applications import ClustalwCommandline
-
+# IDEAS:  <30-01-23, cavelandiah> #
+# - Objects are a good option since a candidate is a composition of features and relations
+# - File names can be dynamic
 def sublist(queue, configurer, log_level, family_name, args):
     # Log definition
     logid = scriptname+'.sublist: '
