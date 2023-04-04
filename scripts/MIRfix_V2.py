@@ -4436,7 +4436,7 @@ def main(args):
                 ## to prevent errors
                 if os.path.exists( args.outdir + line + ".out/") and not args.force:
                     sys.exit( '\nError: At least one output directory already exists! Won\'t override!\nTo override the original output folder, please specify the \'--force\' option.\n')
-                lfams.append( line)
+                lfams.append(line)
 
         for fam in lfams:
             pool.apply_async(sublist, args=(queue, worker_configurer, args.loglevel, fam, args))
