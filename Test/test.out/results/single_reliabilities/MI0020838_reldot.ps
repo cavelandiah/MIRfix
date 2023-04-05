@@ -1,0 +1,168 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Title: RNA Dot Plot
+%%Creator: MLocARNA
+%%CreationDate: Wed May 13 11:16:08 2009
+%%BoundingBox: 66 211 518 662
+%%DocumentFonts: Helvetica
+%%Pages: 1
+%%EndComments
+
+%Options:
+%
+%This file contains the square roots of the base pair probabilities in the form
+% i  j  sqrt(p(i,j)) ubox
+
+%%BeginProlog
+/DPdict 100 dict def
+DPdict begin
+/logscale false def
+/lpmin 1e-05 log def
+
+/box { %size x y box - draws box centered on x,y
+   2 index 0.5 mul sub            % x -= 0.5
+   exch 2 index 0.5 mul sub exch  % y -= 0.5
+   3 -1 roll dup rectfill
+} bind def
+
+/ubox {
+   logscale {
+      log dup add lpmin div 1 exch sub dup 0 lt { pop 0 } if
+   } if
+   3 1 roll
+   exch len exch sub 1 add box
+} bind def
+
+/lbox {
+   3 1 roll
+   len exch sub 1 add box
+} bind def
+
+/drawseq {
+% print sequence along all 4 sides
+[ [0.7 -0.3 0 ]
+  [0.7 0.7 len add 0]
+  [-0.3 len sub -0.4 -90]
+  [-0.3 len sub 0.7 len add -90]
+] {
+   gsave
+    aload pop rotate translate
+    0 1 len 1 sub {
+     dup 0 moveto
+     sequence exch 1 getinterval
+     show
+    } for
+   grestore
+  } forall
+} bind def
+
+/drawgrid{
+  0.01 setlinewidth
+  len log 0.9 sub cvi 10 exch exp  % grid spacing
+  dup 1 gt {
+     dup dup 20 div dup 2 array astore exch 40 div setdash
+  } { [0.3 0.7] 0.1 setdash } ifelse
+  0 exch len {
+     dup dup
+     0 moveto
+     len lineto
+     dup
+     len exch sub 0 exch moveto
+     len exch len exch sub lineto
+     stroke
+  } for
+  [] 0 setdash
+  0.04 setlinewidth
+  currentdict /cutpoint known {
+    cutpoint 1 sub
+    dup dup -1 moveto len 1 add lineto
+    len exch sub dup
+    -1 exch moveto len 1 add exch lineto
+    stroke
+  } if
+  0.5 neg dup translate
+} bind def
+
+end
+%%EndProlog
+DPdict begin
+%delete next line to get rid of title
+270 665 moveto /Helvetica findfont 14 scalefont setfont (dot.ps) show
+
+/sequence { (\
+C--CCUUCCGGA-GGGCCCCCCCUCAAUCCU-GUUGUGCCUAAUUCAGAGGGUUGGGUGGAGGCUCUCCUGAAGGGCUC-\
+) } def
+/len { sequence length } bind def
+
+72 216 translate
+72 6 mul len 1 add div dup scale
+/Helvetica findfont 0.95 scalefont setfont
+
+drawseq
+0.5 dup translate
+% draw diagonal
+0.04 setlinewidth
+0 len moveto len 0 lineto stroke
+
+drawgrid
+
+%data starts here
+0 0 0 setrgbcolor 19 62 0.076562995681284 ubox
+0 0 0 setrgbcolor 23 56 0.169176772819257 ubox
+0 0 0 setrgbcolor 31 49 0.350184127391467 ubox
+0 0 0 setrgbcolor 41 47 0.0631010788643598 ubox
+0 0 0 setrgbcolor 4 75 0.633787758699174 ubox
+0 0 0 setrgbcolor 26 54 0.357693143092491 ubox
+0 0 0 setrgbcolor 37 43 0.568709673126537 ubox
+0 0 0 setrgbcolor 35 47 0.740819296974121 ubox
+0 0 0 setrgbcolor 21 60 0.0920952308127926 ubox
+0 0 0 setrgbcolor 10 69 0.7323697573893 ubox
+0 0 0 setrgbcolor 7 72 0.790634020167456 ubox
+0 0 0 setrgbcolor 22 57 0.176210178261861 ubox
+0 0 0 setrgbcolor 28 52 0.357638192763409 ubox
+0 0 0 setrgbcolor 30 48 0.00927776498284598 ubox
+0 0 0 setrgbcolor 8 71 0.767169372533762 ubox
+0 0 0 setrgbcolor 20 60 0.267783193015429 ubox
+0 0 0 setrgbcolor 24 56 0.294520246137028 ubox
+0 0 0 setrgbcolor 21 57 0.0404208913996025 ubox
+0 0 0 setrgbcolor 11 68 0.702483670765597 ubox
+0 0 0 setrgbcolor 17 63 0.277258968086905 ubox
+0 0 0 setrgbcolor 29 51 0.345297641953231 ubox
+0 0 0 setrgbcolor 15 65 0.277169761920518 ubox
+0 0 0 setrgbcolor 33 44 0.181846807886368 ubox
+0 0 0 setrgbcolor 36 46 0.61433942009033 ubox
+0 0 0 setrgbcolor 21 59 0.268765319420265 ubox
+0 0 0 setrgbcolor 19 60 0.115892370492891 ubox
+0 0 0 setrgbcolor 30 51 0.064841404151265 ubox
+0 0 0 setrgbcolor 33 46 0.179521929236857 ubox
+0 0 0 setrgbcolor 34 48 0.758397044379181 ubox
+0 0 0 setrgbcolor 23 55 0.0336612079860025 ubox
+0 0 0 setrgbcolor 23 57 0.271281103144095 ubox
+0 0 0 setrgbcolor 36 44 0.376125183743596 ubox
+0 0 0 setrgbcolor 27 53 0.358975572342272 ubox
+0 0 0 setrgbcolor 40 48 0.0379756804770146 ubox
+0 0 0 setrgbcolor 38 46 0.175030722577935 ubox
+0 0 0 setrgbcolor 30 50 0.34409770526586 ubox
+0 0 0 setrgbcolor 25 55 0.342653921393224 ubox
+0 0 0 setrgbcolor 18 63 0.0512196852181478 ubox
+0 0 0 setrgbcolor 1 76 0.451344487231035 ubox
+0 0 0 setrgbcolor 22 56 0.0388130796748487 ubox
+0 0 0 setrgbcolor 35 42 0.279059491865086 ubox
+0 0 0 setrgbcolor 34 43 0.175882019022368 ubox
+0 0 0 setrgbcolor 14 66 0.277336230261004 ubox
+0 0 0 setrgbcolor 12 67 0.425961988192157 ubox
+0 0 0 setrgbcolor 31 50 0.0676489240348797 ubox
+0 0 0 setrgbcolor 36 41 0.312259753804671 ubox
+0 0 0 setrgbcolor 18 62 0.276942526667399 ubox
+0 0 0 setrgbcolor 24 55 0.0264723716644063 ubox
+0 0 0 setrgbcolor 31 47 0.0517334142875391 ubox
+0 0 0 setrgbcolor 20 59 0.115069173175897 ubox
+0 0 0 setrgbcolor 37 47 0.127245915757336 ubox
+0 0 0 setrgbcolor 6 73 0.772051712098255 ubox
+0 0 0 setrgbcolor 22 59 0.117083904825688 ubox
+0 0 0 setrgbcolor 5 74 0.703854115129417 ubox
+0 0 0 setrgbcolor 29 52 0.0561018304925551 ubox
+0 0 0 setrgbcolor 16 64 0.277350098112615 ubox
+
+showpage
+end
+%%EOF
