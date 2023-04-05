@@ -646,6 +646,39 @@ def evaluate_final_hairpin(precursor, startmir, endmir, startmirstart, endmirsta
     length_precursor = len(str(precursor))
     return (structure, mfe, loop_size, length_precursor)
 
+def create_bed_locarna(listmatcoor, outdir, filename):
+    counter5 = dict() # Dict with positions
+    counter3 = dict() # Dict with positions
+    label5 = dict()
+    label3 = dict()
+    for n in range(0,int(len(listmatcoor)),7):
+        five_prime = str(listmatcoor[n+3])+" "+str(listmatcoor[n+4])
+        three_prime = str(listmatcoor[n+5])+" "+str(listmatcoor[n+6])
+        counter5[five_prime] = counter5.get(five_prime, 0) + 1
+        counter3[three_prime] = counter3.get(three_prime, 0) + 1
+
+    for i in counter5.keys():
+        part = i.replace(" ","")
+        label5[i] = "miRNA5" + part
+    for i in counter3.keys():
+        part = i.replace(" ","")
+        label3[i] = "miRNA3" + part
+    for n in range(0,int(len(listmatcoor)),7):
+        five_prime = str(listmatcoor[n+3])+" "+str(listmatcoor[n+4])
+        label_end5 = None
+        if label5[five_prime]:
+            label_end5 = str(label5[five_prime])
+        anchorcoorfile = open(outdir+filename.strip()+"-Final.anc","a")
+        anchorcoorfile.write(str(listmatcoor[n])+" "+str(listmatcoor[n+3])+" "+str(listmatcoor[n+4])+" "+label_end5+"\n")
+    for m in range(0,int(len(listmatcoor)),7):
+        three_prime = str(listmatcoor[m+5])+" "+str(listmatcoor[m+6])
+        label_end3 = None
+        if label3[three_prime]:
+            label_end3 = str(label3[three_prime])
+        anchorcoorfile = open(outdir+filename.strip()+"-Final.anc","a")
+        anchorcoorfile.write(str(listmatcoor[m])+" "+str(listmatcoor[m+5])+" "+str(listmatcoor[m+6])+" "+label_end3+"\n")
+    return
+
 #Utils
 def removekey(d, key):
     logid = scriptname+'.removekey: '
@@ -792,16 +825,16 @@ def makeoutdir(outdir, force):
         ## stop MIRfix here to prevent errors
         if os.path.exists( outdir) and not force:
             sys.exit( 'Error: Output directory already exists! Won\'t override!\nTo override the original output folder, please specify the \'--force\' option.\n')
-            
+
         ## in case --force is specified remove the old output dir
         if os.path.exists( outdir) and force:
             shutil.rmtree( outdir)
 
         ## create the output directory
         os.makedirs(outdir)
-        
+
         return outdir
-    
+
     except Exception:
         exc_type, exc_value, exc_tb = sys.exc_info()
         tbe = tb.TracebackException(

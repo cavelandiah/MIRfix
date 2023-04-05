@@ -7,6 +7,8 @@ import sys
 import re
 import shlex
 import multiprocessing
+import subprocess
+import shutil
 import json
 import traceback as tb
 from distutils.spawn import find_executable
@@ -3269,7 +3271,7 @@ def sublist(queue, configurer, level, filename, args):
                             with open(outdir+filename+"-res.fa","a") as familyfileres:
                                 familyfileres.write(">"+str(record.description)+"\n"+str(cutpseq).replace('T','U')+"\n")
                             with open(outdir+filename.strip()+"-Final.fasta","a") as familyfileresfinal:
-                                familyfileresfinal.write(">"+str(record.description)+"\n"+str(cutpseq).replace('T','U')+"\n")
+                                familyfileresfinal.write(">"+str(record.description).split()[1]+"\n"+str(cutpseq).replace('T','U')+"\n")
 
                         elif long2matseq=="":
                             if xcutseq>=xcut and xcut>=0 and xcut<=50:
@@ -3294,7 +3296,8 @@ def sublist(queue, configurer, level, filename, args):
                             with open(outdir+filename+"-res.fa","a") as familyfileres:
                                 familyfileres.write(">"+str(record.description)+"\n"+str(cutpseq).replace('T','U')+"\n")
                             with open(outdir+filename.strip()+"-Final.fasta","a") as familyfileresfinal:
-                                familyfileresfinal.write(">"+str(record.description)+"\n"+str(cutpseq).replace('T','U')+"\n")
+                                #familyfileresfinal.write(">"+str(record.description)+"\n"+str(cutpseq).replace('T','U')+"\n")
+                                familyfileresfinal.write(">"+str(record.description).split()[1]+"\n"+str(cutpseq).replace('T','U')+"\n")
 
 
         if len(listofmirstar)>0:
@@ -3318,7 +3321,8 @@ def sublist(queue, configurer, level, filename, args):
 
         rff = openfile(resultfastafile)
         for frec in SeqIO.parse(rff, 'fasta'):
-            resprecdesc=str(frec.description)
+            #resprecdesc=str(frec.description)
+            resprecdesc=str(frec.description).split()[1]
             resfilesplit=(frec.description).split()
             resprecid=str(resfilesplit[1].strip())
             mat2seq=str(frec.seq).replace('T','U')
@@ -3728,55 +3732,70 @@ def sublist(queue, configurer, level, filename, args):
         log.debug(len(listmatcoor))
         log.debug(len(listmatcoor)/7)
 
-        while mi<=int(len(listmatcoor))-7:
-            mk=mk+1
-            r=0
-
-            for n in range(mk+1,int(len(listmatcoor)/7)+1):
-                with open(outdir+filename.strip()+"-Final.anc","a") as anchorcoorfile:
-                    if listmatcoor[mi+1] == "NULL" or listmatcoor[mi+3] == -1 or listmatcoor[mi+10+r] == -1 or listmatcoor[mi+3] == 0 or listmatcoor[mi+10+r] == 0:
-                        continue
-                    else:
-                        anchorcoorfile.write(str(mk)+" "+str(n)+" "+str(listmatcoor[mi+3]+1)+" "+str(listmatcoor[mi+10+r]+1)+" "+str(22)+" "+str(1)+"\n")
-                    if listmatcoor[mi+1] == "NULL" or listmatcoor[mi+5] == -1 or listmatcoor[mi+12+r] == -1 or listmatcoor[mi+5] == 0 or listmatcoor[mi+12+r] == 0:
-                        continue
-                    else:
-                        anchorcoorfile.write(str(mk)+" "+str(n)+" "+str(listmatcoor[mi+5]+1)+" "+str(listmatcoor[mi+12+r]+1)+" "+str(22)+" "+str(1)+"\n")
-                r=r+7
-
-            mi=mi+7
-
-        log.debug(["here listmatcoor 1 ",listmatcoor])
+        # Based on listmatcoor I can generate a bed file to be used by locarna
+        create_bed_locarna(listmatcoor, outdir, filename)
+#        while mi<=int(len(listmatcoor))-7:
+#            mk=mk+1
+#            r=0
+#
+#            for n in range(mk+1,int(len(listmatcoor)/7)+1):
+#                with open(outdir+filename.strip()+"-Final.anc","a") as anchorcoorfile:
+#                    if listmatcoor[mi+1] == "NULL" or listmatcoor[mi+3] == -1 or listmatcoor[mi+10+r] == -1 or listmatcoor[mi+3] == 0 or listmatcoor[mi+10+r] == 0:
+#                        continue
+#                    else:
+#                        anchorcoorfile.write(str(mk)+" "+str(n)+" "+str(listmatcoor[mi+3]+1)+" "+str(listmatcoor[mi+10+r]+1)+" "+str(22)+" "+str(1)+"\n")
+#                    if listmatcoor[mi+1] == "NULL" or listmatcoor[mi+5] == -1 or listmatcoor[mi+12+r] == -1 or listmatcoor[mi+5] == 0 or listmatcoor[mi+12+r] == 0:
+#                        continue
+#                    else:
+#                        anchorcoorfile.write(str(mk)+" "+str(n)+" "+str(listmatcoor[mi+5]+1)+" "+str(listmatcoor[mi+12+r]+1)+" "+str(22)+" "+str(1)+"\n")
+#                r=r+7
+#
+#            mi=mi+7
+#
+#        log.debug(["here listmatcoor 1 ",listmatcoor])
         maxidesc=0
 
-        finalstk=open(outdir+filename.strip()+'.stk','a')
-        finalstk.write('# STOCKHOLM 1.0\n')
-        if matrdir:
-            fs=os.environ["DIALIGN2_DIR"]=matrdir
-            log.debug(matrdir)
-        f1=os.popen("dialign2-2 -n -anc -fa "+outdir+filename.strip()+'-Final.fasta')
-        log.debug(f1)
-        f1.close()
+        #finalstk=open(outdir+filename.strip()+'.stk','a')
+        #finalstk.write('# STOCKHOLM 1.0\n')
+        #if matrdir:
+        #    fs=os.environ["DIALIGN2_DIR"]=matrdir
+        #    log.debug(matrdir)
+        #f1=os.popen("dialign2-2 -n -anc -fa "+outdir+filename.strip()+'-Final.fasta')
+        #mlocarna --free-endgaps --noLP --stockholm --consensus-structure=alifold --write-structure --relaxed-anchors --anchor-constraints test5.bed test.fa
+        #f1=os.popen("mlocarna --tgtdir "+outdir+filename.strip()+"-Final.out/ --free-endgaps --noLP --stockholm --consensus-structure=alifold --write-structure --relaxed-anchors --anchor-constraints "+outdir+filename.strip()+"-Final.anc "+outdir+filename.strip()+'-Final.fasta')
+        f1= ['mlocarna',
+             '--tgtdir', outdir+filename.strip()+'-Final.out',
+             '--free-endgaps', '--noLP',
+             '--stockholm', '--consensus-structure=alifold',
+             '--write-structure', '--relaxed-anchors',
+             '--anchor-constraints', outdir+filename.strip()+'-Final.anc',
+             outdir+filename.strip()+'-Final.fasta'
+             ]
+        subprocess.run(f1)
+        #log.debug(f1)
+        #f1.close()
+        if os.path.isfile(outdir+filename.strip()+"-Final.out/results/result_prog.stk"):
+            os.system('cp '+outdir+filename.strip()+"-Final.out/results/result_prog.stk"+' '+outdir+filename.strip()+".stk")
 
-        if os.path.isfile(outdir+filename.strip()+'-Final.fa'):
-            doalifold(outdir+filename.strip()+"-Final.fa",outdir)
-            for rec in SeqIO.parse(openfile(outdir+filename.strip()+'-Final.fa'),'fasta'):
-                if len(rec.description.strip())>maxidesc:
-                    maxidesc=len(rec.description.strip())
+        if os.path.isfile(outdir+filename.strip()+'-Final.fasta'):
+            #doalifold(outdir+filename.strip()+"-Final.fa",outdir)
+            #for rec in SeqIO.parse(openfile(outdir+filename.strip()+'-Final.fa'),'fasta'):
+            #    if len(rec.description.strip())>maxidesc:
+            #        maxidesc=len(rec.description.strip())
 
-                if maxidesc<len('#=GC SS_cons'):
-                    maxidesc=len('#=GC SS_cons')
+            #    if maxidesc<len('#=GC SS_cons'):
+            #        maxidesc=len('#=GC SS_cons')
 
-            for rec in SeqIO.parse(openfile(outdir+filename.strip()+'-Final.fa'),'fasta'):
-                finalstk.write(str(rec.description.strip())+" "*(maxidesc-len(rec.description.strip())+2)+str(rec.seq)+"\n")
+            #for rec in SeqIO.parse(openfile(outdir+filename.strip()+'-Final.fa'),'fasta'):
+            #    finalstk.write(str(rec.description.strip())+" "*(maxidesc-len(rec.description.strip())+2)+str(rec.seq)+"\n")
 
-            struct=getstructure(outdir+'alifoldtemp.txt')
-            os.remove(outdir+'alifoldtemp.txt')
-            os.remove(outdir+filename.strip()+"-Final.ali")
-            finalstk.write('#=GC SS_cons'+" "*(maxidesc-len('#=GC SS_cons')+2)+str(struct))
-            finalstk.close()
+            #struct=getstructure(outdir+'alifoldtemp.txt')
+            #os.remove(outdir+'alifoldtemp.txt')
+            #os.remove(outdir+filename.strip()+"-Final.ali")
+            #finalstk.write('#=GC SS_cons'+" "*(maxidesc-len('#=GC SS_cons')+2)+str(struct))
+            #finalstk.close()
 
-            stki = openfile(outdir+filename.strip()+'.stk')
+            stki = openfile(outdir+filename.strip()+"-Final.out/results/result_prog.stk")
             alignment=AlignIO.read(stki,"stockholm")
             countcorrected=0
             countcorrectedTonew=0
@@ -3808,7 +3827,8 @@ def sublist(queue, configurer, level, filename, args):
             # Here calculated the average of nt on left side of align (stnucavg) and on the right side (ndnucavg) on the alignment
             stnucavg=totalstnucnum/numofseqs
             ndnucavg=totalndnucnum/numofseqs
-            alignment=AlignIO.read(outdir+filename.strip()+'.stk',"stockholm")
+            alignment =AlignIO.read(outdir+filename.strip()+"-Final.out/results/result_prog.stk","stockholm")
+            #alignment=AlignIO.read(outdir+filename.strip()+'.stk',"stockholm")
             # Here iterate again but with calculated average scores
             for record in alignment:
                 lenseq=len(str(record.seq))
@@ -3925,8 +3945,8 @@ def sublist(queue, configurer, level, filename, args):
             NewShanon=CalShanon(outdir+filename.strip()+'corrected.stk')
 
         else:
-            if os.path.isfile(outdir+filename.strip()+'-Final.fa'):
-                os.remove(outdir+filename.strip()+"-Final.fa")
+            if os.path.isfile(outdir+filename.strip()+'-Final.fasta'):
+                #os.remove(outdir+filename.strip()+"-Final.fa")
                 NewShanon=CalShanon(outdir+filename.strip()+'.stk')
                 log.debug(["stk file studied is: "+outdir+filename.strip()+'.stk'])
                 log.debug(["final.fa exists",NewShanon])
@@ -4460,9 +4480,8 @@ if __name__ == '__main__':
     logid = scriptname+'.main: '
     try:
         args = parseargs()
-
-        # find_executable('clustalw2') or sys.exit('Please install clustalw2 to run this')
-        find_executable('dialign2-2') or sys.exit('Please install dialign2-2 to run this')
+        #find_executable('dialign2-2') or sys.exit('Please install dialign2-2 to run this')
+        find_executable('mlocarna') or sys.exit('Please install locarna to run this')
 
         main(args)
         sys.exit()
