@@ -3734,7 +3734,7 @@ def sublist(queue, configurer, level, filename, args):
 
         # Based on listmatcoor I can generate a bed file to be used by locarna
         ## CAVH
-        get_anchored_alignment(listmatcoor, outdir, filename)
+        get_anchored_alignment(listmatcoor, outdir, filename, "normal")
         ###
         ##create_bed_locarna(listmatcoor, outdir, filename)
 #        while mi<=int(len(listmatcoor))-7:
@@ -3905,21 +3905,22 @@ def sublist(queue, configurer, level, filename, args):
 
             mirstarcorrectedfile.close()
 
+            ## CAVH here replace
             log.debug(["here listmatcoor 3 ",listmatcoor])
-            mi=0
-            mk=0
-            while mi<=int(len(listmatcoor))-7:
-                mk=mk+1
-                r=0
-                for n in range(mk+1,int(len(listmatcoor)/7)+1):
-                    with open(outdir+filename.strip()+"-corrected.anc","a") as anchorcoorfilecorrected:
-                        anchorcoorfilecorrected.write(str(mk)+" "+str(n)+" "+str(listmatcoor[mi+3])+" "+str(listmatcoor[mi+10+r])+" "+str(22)+" "+str(1)+"\n")
-                        anchorcoorfilecorrected.write(str(mk)+" "+str(n)+" "+str(listmatcoor[mi+5])+" "+str(listmatcoor[mi+12+r])+" "+str(22)+" "+str(1)+"\n")
-                    r=r+7
-
-                mi=mi+7
-
-            maxidesc=0
+            get_anchored_alignment(listmatcoor, outdir, filename, "corrected")
+            ##
+#            mi=0
+#                mk=mk+1
+#                r=0
+#                for n in range(mk+1,int(len(listmatcoor)/7)+1):
+#                    with open(outdir+filename.strip()+"-corrected.anc","a") as anchorcoorfilecorrected:
+#                        anchorcoorfilecorrected.write(str(mk)+" "+str(n)+" "+str(listmatcoor[mi+3])+" "+str(listmatcoor[mi+10+r])+" "+str(22)+" "+str(1)+"\n")
+#                        anchorcoorfilecorrected.write(str(mk)+" "+str(n)+" "+str(listmatcoor[mi+5])+" "+str(listmatcoor[mi+12+r])+" "+str(22)+" "+str(1)+"\n")
+#                    r=r+7
+#
+#                mi=mi+7
+#
+#            maxidesc=0
             finalstkcorrected=open(outdir+filename.strip()+'corrected.stk','a')
             finalstkcorrected.write('# STOCKHOLM 1.0\n')
             if matrdir:
@@ -4431,8 +4432,8 @@ def parseargs():
 
     return parser.parse_args()
 
-def get_anchored_alignment(listmatcoor, outdir, filename):
-    create_bed_locarna(listmatcoor, outdir, filename)
+def get_anchored_alignment(listmatcoor, outdir, filename, mode):
+    create_bed_locarna(listmatcoor, outdir, filename, mode)
     run_locarna(outdir, filename)
     if os.path.isfile(outdir+filename.strip()+"-Final.out/results/result_prog.stk"):
         os.system('cp '+outdir+filename.strip()+"-Final.out/results/result_prog.stk"+' '+outdir+filename.strip()+".stk")

@@ -646,11 +646,15 @@ def evaluate_final_hairpin(precursor, startmir, endmir, startmirstart, endmirsta
     length_precursor = len(str(precursor))
     return (structure, mfe, loop_size, length_precursor)
 
-def create_bed_locarna(listmatcoor, outdir, filename):
+def create_bed_locarna(listmatcoor, outdir, filename, mode):
     counter5 = dict() # Dict with positions
     counter3 = dict() # Dict with positions
     label5 = dict()
     label3 = dict()
+    if mode == "normal":
+        out_name = outdir+filename.strip()+"-Final.anc"
+    else:
+        out_name = outdir+filename.strip()+"--corrected.anc"
     for n in range(0,int(len(listmatcoor)),7):
         five_prime = str(listmatcoor[n+3])+" "+str(listmatcoor[n+4])
         three_prime = str(listmatcoor[n+5])+" "+str(listmatcoor[n+6])
@@ -668,14 +672,14 @@ def create_bed_locarna(listmatcoor, outdir, filename):
         label_end5 = None
         if label5[five_prime]:
             label_end5 = str(label5[five_prime])
-        anchorcoorfile = open(outdir+filename.strip()+"-Final.anc","a")
+        anchorcoorfile = open(out_name,"a")
         anchorcoorfile.write(str(listmatcoor[n])+" "+str(listmatcoor[n+3])+" "+str(listmatcoor[n+4])+" "+label_end5+"\n")
     for m in range(0,int(len(listmatcoor)),7):
         three_prime = str(listmatcoor[m+5])+" "+str(listmatcoor[m+6])
         label_end3 = None
         if label3[three_prime]:
             label_end3 = str(label3[three_prime])
-        anchorcoorfile = open(outdir+filename.strip()+"-Final.anc","a")
+        anchorcoorfile = open(out_name,"a")
         anchorcoorfile.write(str(listmatcoor[m])+" "+str(listmatcoor[m+5])+" "+str(listmatcoor[m+6])+" "+label_end3+"\n")
     return
 
