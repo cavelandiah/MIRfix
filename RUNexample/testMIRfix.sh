@@ -12,7 +12,13 @@ echo "Running MIRfix with ${cores} cores, ${extension}nt extension at ${location
 cp mature.fa maturetest.fa
 cp mapping.txt mappingtest.txt
 
-python MIRfix.py -j ${cores} -o ${location}/output/ -i ${location}/Families/ -f ${location}/list.txt -g ${location}/genomes_list.txt -m ${location}/mappingtest.txt -a ${location}/maturetest.fa -e ${extension}
+#python MIRfix.py -j ${cores} -o ${location}/output/ -i ${location}/Families/ -f ${location}/list.txt -g ${location}/genomes_list.txt -m ${location}/mappingtest.txt -a ${location}/maturetest.fa -e ${extension}
+model=$1
+if [[ $model == "debug" ]]; then
+    python -m pudb MIRfix_V2.py -j ${cores} -o ${location}/output/ -i ${location}/Families/ -f ${location}/list.txt -g ${location}/genomes_list.txt -m ${location}/mappingtest.txt -a ${location}/maturetest.fa -e ${extension} --loglevel DEBUG
+else
+    python MIRfix_V2.py -j ${cores} -o ${location}/output/ -i ${location}/Families/ -f ${location}/list.txt -g ${location}/genomes_list.txt -m ${location}/mappingtest.txt -a ${location}/maturetest.fa -e ${extension} --loglevel DEBUG
+fi
 
 echo "Found "`diff mature.fa maturetest.fa`
 echo "At "`diff mapping.txt mappingtest.txt

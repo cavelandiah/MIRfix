@@ -3733,7 +3733,10 @@ def sublist(queue, configurer, level, filename, args):
         log.debug(len(listmatcoor)/7)
 
         # Based on listmatcoor I can generate a bed file to be used by locarna
-        create_bed_locarna(listmatcoor, outdir, filename)
+        ## CAVH
+        get_anchored_alignment(listmatcoor, outdir, filename)
+        ###
+        ##create_bed_locarna(listmatcoor, outdir, filename)
 #        while mi<=int(len(listmatcoor))-7:
 #            mk=mk+1
 #            r=0
@@ -3753,7 +3756,7 @@ def sublist(queue, configurer, level, filename, args):
 #            mi=mi+7
 #
 #        log.debug(["here listmatcoor 1 ",listmatcoor])
-        maxidesc=0
+        ##maxidesc=0
 
         #finalstk=open(outdir+filename.strip()+'.stk','a')
         #finalstk.write('# STOCKHOLM 1.0\n')
@@ -3763,19 +3766,19 @@ def sublist(queue, configurer, level, filename, args):
         #f1=os.popen("dialign2-2 -n -anc -fa "+outdir+filename.strip()+'-Final.fasta')
         #mlocarna --free-endgaps --noLP --stockholm --consensus-structure=alifold --write-structure --relaxed-anchors --anchor-constraints test5.bed test.fa
         #f1=os.popen("mlocarna --tgtdir "+outdir+filename.strip()+"-Final.out/ --free-endgaps --noLP --stockholm --consensus-structure=alifold --write-structure --relaxed-anchors --anchor-constraints "+outdir+filename.strip()+"-Final.anc "+outdir+filename.strip()+'-Final.fasta')
-        f1= ['mlocarna',
-             '--tgtdir', outdir+filename.strip()+'-Final.out',
-             '--free-endgaps', '--noLP',
-             '--stockholm', '--consensus-structure=alifold',
-             '--write-structure', '--relaxed-anchors',
-             '--anchor-constraints', outdir+filename.strip()+'-Final.anc',
-             outdir+filename.strip()+'-Final.fasta'
-             ]
-        subprocess.run(f1)
+        ##f1= ['mlocarna',
+        ##     '--tgtdir', outdir+filename.strip()+'-Final.out',
+        ##     '--free-endgaps', '--noLP',
+        ##     '--stockholm', '--consensus-structure=alifold',
+        ##     '--write-structure', '--relaxed-anchors',
+        ##     '--anchor-constraints', outdir+filename.strip()+'-Final.anc',
+        ##     outdir+filename.strip()+'-Final.fasta'
+        ##     ]
+        ##subprocess.run(f1)
         #log.debug(f1)
         #f1.close()
-        if os.path.isfile(outdir+filename.strip()+"-Final.out/results/result_prog.stk"):
-            os.system('cp '+outdir+filename.strip()+"-Final.out/results/result_prog.stk"+' '+outdir+filename.strip()+".stk")
+        ##if os.path.isfile(outdir+filename.strip()+"-Final.out/results/result_prog.stk"):
+        ##    os.system('cp '+outdir+filename.strip()+"-Final.out/results/result_prog.stk"+' '+outdir+filename.strip()+".stk")
 
         if os.path.isfile(outdir+filename.strip()+'-Final.fasta'):
             #doalifold(outdir+filename.strip()+"-Final.fa",outdir)
@@ -4428,6 +4431,22 @@ def parseargs():
 
     return parser.parse_args()
 
+def get_anchored_alignment(listmatcoor, outdir, filename):
+    create_bed_locarna(listmatcoor, outdir, filename)
+    run_locarna(outdir, filename)
+    if os.path.isfile(outdir+filename.strip()+"-Final.out/results/result_prog.stk"):
+        os.system('cp '+outdir+filename.strip()+"-Final.out/results/result_prog.stk"+' '+outdir+filename.strip()+".stk")
+
+def run_locarna(outdir, filename):
+    f1= ['mlocarna',
+         '--tgtdir', outdir+filename.strip()+'-Final.out',
+         '--free-endgaps', '--noLP',
+         '--stockholm', '--consensus-structure=alifold',
+         '--write-structure', '--relaxed-anchors',
+         '--anchor-constraints', outdir+filename.strip()+'-Final.anc',
+         outdir+filename.strip()+'-Final.fasta'
+         ]
+    subprocess.run(f1)
 
 def main(args):
     try:
