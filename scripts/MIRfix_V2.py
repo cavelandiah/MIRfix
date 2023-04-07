@@ -3764,21 +3764,9 @@ def sublist(queue, configurer, level, filename, args):
         #    fs=os.environ["DIALIGN2_DIR"]=matrdir
         #    log.debug(matrdir)
         #f1=os.popen("dialign2-2 -n -anc -fa "+outdir+filename.strip()+'-Final.fasta')
-        #mlocarna --free-endgaps --noLP --stockholm --consensus-structure=alifold --write-structure --relaxed-anchors --anchor-constraints test5.bed test.fa
-        #f1=os.popen("mlocarna --tgtdir "+outdir+filename.strip()+"-Final.out/ --free-endgaps --noLP --stockholm --consensus-structure=alifold --write-structure --relaxed-anchors --anchor-constraints "+outdir+filename.strip()+"-Final.anc "+outdir+filename.strip()+'-Final.fasta')
-        ##f1= ['mlocarna',
-        ##     '--tgtdir', outdir+filename.strip()+'-Final.out',
-        ##     '--free-endgaps', '--noLP',
-        ##     '--stockholm', '--consensus-structure=alifold',
-        ##     '--write-structure', '--relaxed-anchors',
-        ##     '--anchor-constraints', outdir+filename.strip()+'-Final.anc',
-        ##     outdir+filename.strip()+'-Final.fasta'
-        ##     ]
-        ##subprocess.run(f1)
+        #subprocess.run(f1)
         #log.debug(f1)
         #f1.close()
-        ##if os.path.isfile(outdir+filename.strip()+"-Final.out/results/result_prog.stk"):
-        ##    os.system('cp '+outdir+filename.strip()+"-Final.out/results/result_prog.stk"+' '+outdir+filename.strip()+".stk")
 
         if os.path.isfile(outdir+filename.strip()+'-Final.fasta'):
             #doalifold(outdir+filename.strip()+"-Final.fa",outdir)
@@ -3798,40 +3786,13 @@ def sublist(queue, configurer, level, filename, args):
             #finalstk.write('#=GC SS_cons'+" "*(maxidesc-len('#=GC SS_cons')+2)+str(struct))
             #finalstk.close()
 
-            stki = openfile(outdir+filename.strip()+"-Final.out/results/result_prog.stk")
+            #stki = openfile(outdir+filename.strip()+"-Final.out/results/result_prog.stk")
+            stki = openfile(outdir+filename.strip()+".stk")
             alignment=AlignIO.read(stki,"stockholm")
-            countcorrected=0
-            countcorrectedTonew=0
-            sthalfgaps=0
-            ndhalfgaps=0
-            sthalfsum=0
-            ndhalfsum=0
-            stnucnum=0
-            ndnucnum=0
-            numofseqs=0
-            totalstnucnum=0
-            totalndnucnum=0
-
-            for record in alignment:
-                lenseq=len(str(record.seq))
-                seq=str(record.seq)
-                sthalf=seq[0:int((lenseq/2))]
-                ndhalf=seq[int((lenseq/2)):]
-                sthalfgaps=sthalf.count('-')
-                stnucnum=len(sthalf)-sthalfgaps
-                totalstnucnum=totalstnucnum+stnucnum
-                ndhalfgaps=ndhalf.count('-')
-                ndnucnum=len(ndhalf)-ndhalfgaps
-                totalndnucnum=totalndnucnum+ndnucnum
-                sthalfsum=sthalfgaps+sthalfsum
-                ndhalfsum=ndhalfgaps+ndhalfsum
-                numofseqs=numofseqs+1
-            log.debug([sthalfsum,ndhalfsum,totalstnucnum,totalndnucnum])
-            # Here calculated the average of nt on left side of align (stnucavg) and on the right side (ndnucavg) on the alignment
-            stnucavg=totalstnucnum/numofseqs
-            ndnucavg=totalndnucnum/numofseqs
+            (stnucavg, ndnucavg) = alignment_statistics(alignment)
+            #(countcorrected, countcorrectedTonew, listmisalignedcorr, listcorrected, listcorrectedori) = correct_sequences_alignment(alignment, stnucavg, ndnucavg, listofnew,listofnewloop,listoldstatus,templong,listmisalignedcorr,listcorrected,listcorrectedori,listgoodnew)
             alignment =AlignIO.read(outdir+filename.strip()+"-Final.out/results/result_prog.stk","stockholm")
-            #alignment=AlignIO.read(outdir+filename.strip()+'.stk',"stockholm")
+            alignment=AlignIO.read(outdir+filename.strip()+'.stk',"stockholm")
             # Here iterate again but with calculated average scores
             for record in alignment:
                 lenseq=len(str(record.seq))
@@ -4448,6 +4409,77 @@ def run_locarna(outdir, filename):
          outdir+filename.strip()+'-Final.fasta'
          ]
     subprocess.run(f1)
+
+def alignment_statistics(alignment):
+    """TODO: Docstring for alignment_statistics.
+
+    :arg1: TODO
+    :returns: TODO
+
+    """
+    sthalfgaps=0
+    ndhalfgaps=0
+    sthalfsum=0
+    ndhalfsum=0
+    stnucnum=0
+    ndnucnum=0
+    numofseqs=0
+    totalstnucnum=0
+    totalndnucnum=0
+
+    for record in alignment:
+        lenseq=len(str(record.seq))
+        seq=str(record.seq)
+        sthalf=seq[0:int((lenseq/2))]
+        ndhalf=seq[int((lenseq/2)):]
+        sthalfgaps=sthalf.count('-')
+        stnucnum=len(sthalf)-sthalfgaps
+        totalstnucnum=totalstnucnum+stnucnum
+        ndhalfgaps=ndhalf.count('-')
+        ndnucnum=len(ndhalf)-ndhalfgaps
+        totalndnucnum=totalndnucnum+ndnucnum
+        sthalfsum=sthalfgaps+sthalfsum
+        ndhalfsum=ndhalfgaps+ndhalfsum
+        numofseqs=numofseqs+1
+    log.debug(["These are alignment statistics:",sthalfsum,ndhalfsum,totalstnucnum,totalndnucnum])
+    # Here calculated the average of nt on left side of align (stnucavg) and on the right side (ndnucavg) on the alignment
+    stnucavg=totalstnucnum/numofseqs
+    ndnucavg=totalndnucnum/numofseqs
+    return (stnucavg, ndnucavg)
+
+def correct_sequences_alignment(alignment, stnucavg, ndnucavg, listofnew,listofnewloop,listoldstatus,templong,listmisalignedcorr,listcorrected,listcorrectedori,listgoodnew):
+    """TODO: Docstring for correct_sequences_alignment.
+    Iterate over sequences in the alignment
+    :arg1: TODO
+    :returns: TODO
+    """
+    countcorrected=0
+    countcorrectedTonew=0
+    for record in alignment:
+        lenseq=len(str(record.seq)) # Length sequence
+        seq=str(record.seq) # Sequence
+        corid=str(record.id) # Id sequence
+        sthalf=seq[0:int((lenseq/2))] # Half left sequence
+        ndhalf=seq[int((lenseq/2)):] # Half right sequence
+        sthalfgaps=sthalf.count('-') # Count number of gaps
+        stnucnum=len(sthalf)-sthalfgaps # Number nt left part
+        ndhalfgaps=ndhalf.count('-') # Count gaps right
+        ndnucnum=len(ndhalf)-ndhalfgaps # Number nt right part
+        nucnum=stnucnum+ndnucnum # Total nt number
+
+        if (stnucnum>(stnucavg*1.5) and (ndnucnum<(ndnucavg/2) or ndnucnum==0) ) or (stnucnum>0.7*nucnum and (ndnucnum<(ndnucavg/2) or ndnucnum==0)):#-(stnucavg*0.1)):
+            log.debug([record.id,'st'])
+            log.debug([stnucnum,ndnucnum,nucnum])
+            log.debug(["list new good",corid,listgoodnew])
+            countcorrected,countcorrectedTonew,listmisalignedcorr,listcorrected,listcorrectedori=correct(corid.strip(),userflanking,countcorrected,countcorrectedTonew,listofnew,listofnewloop,listoldstatus,templong,listmisalignedcorr,listcorrected,listcorrectedori,listgoodnew)
+
+        if (ndnucnum>(ndnucavg*1.5) and (stnucnum<(stnucavg/2) or stnucnum==0)) or (ndnucnum>0.7*nucnum and (stnucnum<(stnucavg/2) or stnucnum==0)):#-(ndnucavg*0.1)):
+            log.debug([record.id,'nd'])
+            log.debug([stnucnum,ndnucnum,nucnum])
+            log.debug(["list new good",corid,listgoodnew])
+            countcorrected,countcorrectedTonew,listmisalignedcorr,listcorrected,listcorrectedori=correct(corid.strip(),userflanking,countcorrected,countcorrectedTonew,listofnew,listofnewloop,listoldstatus,templong,listmisalignedcorr,listcorrected,listcorrectedori,listgoodnew)
+            return (countcorrected,countcorrectedTonew,listmisalignedcorr,listcorrected,listcorrectedori)
+
 
 def main(args):
     try:
