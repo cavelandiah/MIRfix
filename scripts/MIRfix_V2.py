@@ -3272,6 +3272,8 @@ def sublist(queue, configurer, level, filename, args):
                                 familyfileres.write(">"+str(record.description)+"\n"+str(cutpseq).replace('T','U')+"\n")
                             with open(outdir+filename.strip()+"-Final.fasta","a") as familyfileresfinal:
                                 familyfileresfinal.write(">"+str(record.description).split()[1]+"\n"+str(cutpseq).replace('T','U')+"\n")
+                            with open(outdir+filename.strip()+"-Final-complete.fasta","a") as familyfileresfinal:
+                                familyfileresfinal.write(">"+str(record.description).split()+"\n"+str(cutpseq).replace('T','U')+"\n")
 
                         elif long2matseq=="":
                             if xcutseq>=xcut and xcut>=0 and xcut<=50:
@@ -3296,8 +3298,9 @@ def sublist(queue, configurer, level, filename, args):
                             with open(outdir+filename+"-res.fa","a") as familyfileres:
                                 familyfileres.write(">"+str(record.description)+"\n"+str(cutpseq).replace('T','U')+"\n")
                             with open(outdir+filename.strip()+"-Final.fasta","a") as familyfileresfinal:
-                                #familyfileresfinal.write(">"+str(record.description)+"\n"+str(cutpseq).replace('T','U')+"\n")
                                 familyfileresfinal.write(">"+str(record.description).split()[1]+"\n"+str(cutpseq).replace('T','U')+"\n")
+                            with open(outdir+filename.strip()+"-Final-complete.fasta","a") as familyfileresfinal:
+                                familyfileresfinal.write(">"+str(record.description)+"\n"+str(cutpseq).replace('T','U')+"\n")
 
 
         if len(listofmirstar)>0:
@@ -3321,7 +3324,7 @@ def sublist(queue, configurer, level, filename, args):
 
         rff = openfile(resultfastafile)
         for frec in SeqIO.parse(rff, 'fasta'):
-            #resprecdesc=str(frec.description)
+            resprecdesc_complete=str(frec.description)
             resprecdesc=str(frec.description).split()[1]
             resfilesplit=(frec.description).split()
             resprecid=str(resfilesplit[1].strip())
@@ -3452,6 +3455,8 @@ def sublist(queue, configurer, level, filename, args):
                         list1matcoor.append(endmatstar)
                         with open(outdir+filename.strip()+"-Final.fasta","a") as familyfileresfinal:
                             familyfileresfinal.write(">"+resprecdesc+"\n"+finalseq+"\n")
+                        with open(outdir+filename.strip()+"-Final-complete.fasta","a") as familyfileresfinal:
+                            familyfileresfinal.write(">"+resprecdesc_complete+"\n"+finalseq+"\n")
                         startmat=0
                         endmat=0
                         startmatstar=0
@@ -3466,6 +3471,8 @@ def sublist(queue, configurer, level, filename, args):
                         list1matcoor.append(endmat)
                         with open(outdir+filename.strip()+"-Final.fasta","a") as familyfileresfinal:
                             familyfileresfinal.write(">"+resprecdesc+"\n"+finalseq+"\n")
+                        with open(outdir+filename.strip()+"-Final-complete.fasta","a") as familyfileresfinal:
+                            familyfileresfinal.write(">"+resprecdesc_complete+"\n"+finalseq+"\n")
                         startmat=0
                         endmat=0
                         startmatstar=0
@@ -3486,6 +3493,8 @@ def sublist(queue, configurer, level, filename, args):
                         list1matcoor.append(endmatstar)
                         with open(outdir+filename.strip()+"-Final.fasta","a") as familyfileresfinal:
                             familyfileresfinal.write(">"+resprecdesc+"\n"+finalseq+"\n")
+                        with open(outdir+filename.strip()+"-Final-complete.fasta","a") as familyfileresfinal:
+                            familyfileresfinal.write(">"+resprecdesc_complete+"\n"+finalseq+"\n")
                         startmat=0
                         endmat=0
                         startmatstar=0
@@ -3664,6 +3673,8 @@ def sublist(queue, configurer, level, filename, args):
                         list1matcoor.append(endmatstar)
                         with open(outdir+filename.strip()+"-Final.fasta","a") as familyfileresfinal:
                             familyfileresfinal.write(">"+resprecdesc+"\n"+finalseq+"\n")
+                        with open(outdir+filename.strip()+"-Final-complete.fasta","a") as familyfileresfinal:
+                            familyfileresfinal.write(">"+resprecdesc_complete+"\n"+finalseq+"\n")
                         startmat=0
                         endmat=0
                         startmatstar=0
@@ -3679,6 +3690,8 @@ def sublist(queue, configurer, level, filename, args):
                         list1matcoor.append(endmat)
                         with open(outdir+filename.strip()+"-Final.fasta","a") as familyfileresfinal:
                             familyfileresfinal.write(">"+resprecdesc+"\n"+finalseq+"\n")
+                        with open(outdir+filename.strip()+"-Final-complete.fasta","a") as familyfileresfinal:
+                            familyfileresfinal.write(">"+resprecdesc_complete+"\n"+finalseq+"\n")
                         startmat=0
                         endmat=0
                         startmatstar=0
@@ -3700,6 +3713,8 @@ def sublist(queue, configurer, level, filename, args):
                         list1matcoor.append(endmatstar)
                         with open(outdir+filename.strip()+"-Final.fasta","a") as familyfileresfinal:
                             familyfileresfinal.write(">"+resprecdesc+"\n"+finalseq+"\n")
+                        with open(outdir+filename.strip()+"-Final-complete.fasta","a") as familyfileresfinal:
+                            familyfileresfinal.write(">"+resprecdesc_complete+"\n"+finalseq+"\n")
                         startmat=0
                         endmat=0
                         startmatstar=0
