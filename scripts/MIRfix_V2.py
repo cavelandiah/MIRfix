@@ -3273,7 +3273,7 @@ def sublist(queue, configurer, level, filename, args):
                             with open(outdir+filename.strip()+"-Final.fasta","a") as familyfileresfinal:
                                 familyfileresfinal.write(">"+str(record.description).split()[1]+"\n"+str(cutpseq).replace('T','U')+"\n")
                             with open(outdir+filename.strip()+"-Final-complete.fasta","a") as familyfileresfinal:
-                                familyfileresfinal.write(">"+str(record.description).split()+"\n"+str(cutpseq).replace('T','U')+"\n")
+                                familyfileresfinal.write(">"+str(record.description)+"\n"+str(cutpseq).replace('T','U')+"\n")
 
                         elif long2matseq=="":
                             if xcutseq>=xcut and xcut>=0 and xcut<=50:
